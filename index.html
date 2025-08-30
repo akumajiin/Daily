@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randomized Name Groups</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Randomized Name Groups</h1>
+        <form id="nameForm">
+            <label for="names">Enter 1-20 names (one per line):</label>
+            <textarea id="names" rows="10" placeholder="Type each name on a new line"></textarea>
+            <button type="submit">Randomize & Group</button>
+        </form>
+        <div id="results" class="results" style="display:none;">
+            <div class="group" id="group-ab">
+                <h2>A/B</h2>
+                <ul></ul>
+            </div>
+            <div class="group" id="group-cd">
+                <h2>C/D</h2>
+                <ul></ul>
+            </div>
+            <div class="group" id="group-tco">
+                <h2>TCO</h2>
+                <ul></ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        document.getElementById('nameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const namesInput = document.getElementById('names').value.trim();
+            let names = namesInput.split(/\r?\n/).map(n => n.trim()).filter(n => n);
+            if (names.length < 1 || names.length > 20) {
+                alert('Please enter between 1 and 20 names.');
+                return;
+            }
+            names = shuffle(names);
+            const tco = names.slice(0, Math.min(2, names.length));
+            const rest = names.slice(Math.min(2, names.length));
+            const ab = [];
+            const cd = [];
+            rest.forEach((name, i) => {
+                (i % 2 === 0 ? ab : cd).push(name);
+            });
+            document.querySelector('#group-ab ul').innerHTML = ab.map(n => `<li>${n}</li>`).join('');
+            document.querySelector('#group-cd ul').innerHTML = cd.map(n => `<li>${n}</li>`).join('');
+            document.querySelector('#group-tco ul').innerHTML = tco.map(n => `<li>${n}</li>`).join('');
+            document.getElementById('results').style.display = 'flex';
+        });
+    </script>
+</body>
+</html>
